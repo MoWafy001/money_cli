@@ -1,7 +1,7 @@
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-from .config import *
+from .config import DATABASE_URI 
 
 
 # initialize
@@ -12,8 +12,6 @@ session = Session()
 
 
 # models
-
-
 class History(Base):
   __tablename__ = 'history'
 
