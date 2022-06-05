@@ -5,7 +5,7 @@ from .config import DATABASE_URI
 
 
 # initialize
-engine = create_engine(DATABASE_URI, echo=True)
+engine = create_engine(DATABASE_URI)
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
 session = Session()
