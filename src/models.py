@@ -25,7 +25,7 @@ class User(Base):
   __tablename__ = 'users'
 
   username = Column(String, primary_key=True)
-  total = Column(Integer, default=0, nullable=False)
+  total = Column(Float, default=0, nullable=False)
 
   history = relationship('History', secondary='user_history', back_populates='users')
 
