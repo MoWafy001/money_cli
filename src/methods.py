@@ -20,7 +20,7 @@ class Methods:
     def add_spend(self, value):
         self.current_user.add_or_spend(value, datetime.now())
         self.session.commit()
-        print(value, 'added')
+        print(abs(value), 'added' if value >= 0 else 'spent')
         self.get_total()
 
 
