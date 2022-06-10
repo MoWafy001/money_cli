@@ -17,6 +17,7 @@ class History(Base):
 
   date = Column(DateTime, primary_key=True)
   value = Column(Float, nullable=False)
+  desc = Column(String, nullable=True)
 
   users = relationship('User', secondary='user_history', back_populates='history')
 
