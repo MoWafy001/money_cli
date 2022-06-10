@@ -1,7 +1,8 @@
 from sqlalchemy import *
+from sqlalchemy import event
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-from .config import DATABASE_URI 
+from .config import DATABASE_URI, DEFAULT_CATEGORY_NAME
 
 
 # initialize
@@ -22,6 +23,14 @@ class History(Base):
   users = relationship('User', secondary='user_history', back_populates='history')
 
 
+class Category(Base):
+  __tablename__ = 'categories'
+
+  category_name = Column(String, primary_key=True)
+  username = Column(String, ForeignKey('users.username'), primary_key=True)
+  total = Column(Float, default=0, nullable=False)
+
+
 class User(Base):
   __tablename__ = 'users'
 
@@ -31,20 +40,23 @@ class User(Base):
   history = relationship('History', secondary='user_history', back_populates='users')
 
 
-  def add_or_spend(self, value, when):
+  def add_or_spend(self, value, when, category_name=DEFAULT_CATEGORY_NAME):
+    if self.total is None:
+      self.total = 0
+
     old_total = self.total
 
     try:
       h = History(date=when, value=value)
       self.history.append(h)
-
-      if self.total is None:
-        self.total = 0
-        
       self.total += value
     except Exception as e:
       self.total = old_total
       raise e
+
+    # update category
+    category = session.query(Category).get((category_name, self.username))
+    category.total += value
 
 
 class UserHistory(Base):
@@ -54,4 +66,16 @@ class UserHistory(Base):
   date = Column(DateTime, ForeignKey('history.date'), primary_key=True)
 
 
+# create all
 Base.metadata.create_all(engine)
+
+
+# events
+@event.listens_for(Session, 'after_attach')
+def receive_after_create(session, instance):
+  if instance.__tablename__ != User.__tablename__:
+    return
+  
+  default = Category(category_name=DEFAULT_CATEGORY_NAME, username=instance.username, total=instance.total)
+  session.add(default)
+  print(default.category_name, 'created')

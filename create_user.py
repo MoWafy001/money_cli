@@ -37,7 +37,7 @@ except:
 
 
 try:
-    user = User(username='mohamedwafy', total=total)
+    user = User(username=username, total=total)
     session.add(user)
     session.commit()
 

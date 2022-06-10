@@ -17,17 +17,18 @@ class Methods:
         self.get_total()
 
 
-    def add(self, value):
-        value = int(value)
+    def add_spend(self, value):
         self.current_user.add_or_spend(value, datetime.now())
         self.session.commit()
         print(value, 'added')
         self.get_total()
 
 
+    def add(self, value):
+        value = int(value)
+        self.add_spend(value)
+
+
     def spend(self, value):
         value = int(value)
-        self.current_user.add_or_spend(-value, datetime.now())
-        self.session.commit()
-        print(value, 'spent')
-        self.get_total()
+        self.add_spend(-value)
