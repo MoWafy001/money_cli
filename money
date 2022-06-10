@@ -1,5 +1,8 @@
 #! /usr/bin/bash
 
+# Runs money.py from a virtual environment in the same directory named "env"
+# I tried running it using sh, but didn't work so I used bash
+
 parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 
 $parent_path/env/bin/python $parent_path/money.py $1 $2
