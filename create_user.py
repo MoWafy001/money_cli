@@ -40,6 +40,9 @@ try:
     user = User(username='mohamedwafy', total=total)
     session.add(user)
     session.commit()
+
+    print(username, 'successfully created with total of', total)
+
 except Exception as e:
     print('The user could not be added')
     print('maybe the user already exists')
