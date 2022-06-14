@@ -38,9 +38,32 @@ class User(Base):
   total = Column(Float, default=0, nullable=False)
 
   history = relationship('History', secondary='user_history', back_populates='users')
+  categories = relationship('Category', backref='user')
 
 
-  def add_or_spend(self, value, when, category_name=DEFAULT_CATEGORY_NAME):
+  def choose_category(self):
+    print('Choose a category:')
+    print('________________________\n')
+    for i, c in enumerate(self.categories):
+      print(f'{i}\t{c.category_name}\t{"[Default]" if c.category_name == DEFAULT_CATEGORY_NAME else ""}')
+    
+    print('________________________\n')
+    choice = input('Choice Index(keep blank for default): ')
+
+    if choice.strip() == '':
+      return DEFAULT_CATEGORY_NAME
+    else:
+      try:
+        choice = int(choice)
+        return self.categories[choice].category_name
+      except:
+        raise Exception('Invalid choice')
+
+
+
+  def add_or_spend(self, value, when, **kargs):
+    category_name = kargs['category_name'] if 'category_name' in kargs else self.choose_category()
+
     if self.total is None:
       self.total = 0
 
@@ -55,8 +78,11 @@ class User(Base):
       raise e
 
     # update category
-    category = session.query(Category).get((category_name, self.username))
-    category.total += value
+    try:
+      category = session.query(Category).get((category_name, self.username))
+      category.total += value
+    except:
+      raise Exception(f'Could not add to category ({category_name}). It may not exist')
 
 
 class UserHistory(Base):
