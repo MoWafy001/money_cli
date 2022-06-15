@@ -20,7 +20,7 @@ def handel_command(command):
     action = command[0] if len(command) > 0 else None
     value = command[1] if len(command) > 1 else None
 
-    if value[:2] == '--': # if flag
+    if value is not None and value[:2] == '--': # if flag
         value = None
 
     try:
