@@ -31,4 +31,4 @@ class Methods:
 
     def spend(self, value, **kargs):
         value = int(value)
-        self.add_spend(-value, *kargs)
+        self.add_spend(-value, **kargs)
