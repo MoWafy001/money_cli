@@ -16,7 +16,7 @@ commands = {
 
 
 def handel_command(command):
-    flags = {f[2:]:command[i+1] for i, f in enumerate(command[:-1]) if f[:2] == '--'}
+    flags = {f[2:].replace('-','_'):command[i+1] for i, f in enumerate(command[:-1]) if f[:2] == '--'}
     action = command[0] if len(command) > 0 else None
     value = command[1] if len(command) > 1 else None
 
