@@ -20,7 +20,12 @@ class History(Base):
   value = Column(Float, nullable=False)
   desc = Column(String, nullable=True)
 
-  users = relationship('User', secondary='user_history', back_populates='history')
+  username = Column(String, ForeignKey('users.username'), nullable=False)
+  category_name = Column(String, ForeignKey('categories.category_name'), nullable=False)
+
+  user = relationship('User', back_populates='history')
+  category = relationship('Category', backref='history', foreign_keys=[category_name, username])
+
 
 
 class Category(Base):
@@ -37,7 +42,7 @@ class User(Base):
   username = Column(String, primary_key=True)
   total = Column(Float, default=0, nullable=False)
 
-  history = relationship('History', secondary='user_history', back_populates='users')
+  history = relationship('History', back_populates='user')
   categories = relationship('Category', backref='user')
 
 
@@ -70,7 +75,7 @@ class User(Base):
     old_total = self.total
 
     try:
-      h = History(date=when, value=value)
+      h = History(date=when, value=value, category_name=category_name)
       self.history.append(h)
       self.total += value
     except Exception as e:
@@ -83,13 +88,6 @@ class User(Base):
       category.total += value
     except:
       raise Exception(f'Could not add to category ({category_name}). It may not exist')
-
-
-class UserHistory(Base):
-  __tablename__ = 'user_history'
-
-  username = Column(String, ForeignKey('users.username'), primary_key=True)
-  date = Column(DateTime, ForeignKey('history.date'), primary_key=True)
 
 
 # create all
