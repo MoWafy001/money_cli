@@ -12,7 +12,10 @@ commands = {
     'history': methods.get_history,
     'set-total': methods.set_total,
     'add': methods.add,
-    'spend': methods.spend
+    'spend': methods.spend,
+    #'create-category': methods.create_category,
+    #'remove-category': methods.remove_category,
+    #'analyse': methods.analyse,
 }
 
 
