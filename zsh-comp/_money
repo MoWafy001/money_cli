@@ -1,0 +1,12 @@
+#compdef money
+
+local -a subcmds
+
+subcmds=(\
+'total' \
+'history' \
+'add' \
+'spend' \
+'set-total' \
+)
+_describe 'command' subcmds
