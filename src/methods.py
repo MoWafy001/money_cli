@@ -25,6 +25,7 @@ class Methods:
         self.get_total()
 
 
+    # can receive a category_name in the kargs
     def add_spend(self, value, **kargs):
         self.current_user.add_or_spend(value, datetime.now(), **kargs)
         self.session.commit()
@@ -32,11 +33,26 @@ class Methods:
         self.get_total()
 
 
+    # can receive a category_name in the kargs
     def add(self, value, **kargs):
         value = int(value)
         self.add_spend(value, **kargs)
 
 
+    # can receive a category_name in the kargs
     def spend(self, value, **kargs):
         value = int(value)
         self.add_spend(-value, **kargs)
+
+    
+    # can receive a value in the kargs as a flag
+    def create_category(self, category_name, **kargs):
+        pass
+
+
+    def remove_category(self, category_name):
+        pass
+
+
+    def analyse(self):
+        pass
