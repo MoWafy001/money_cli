@@ -1,7 +1,7 @@
 from src.models import User, session
 import sys
 
-
+# Get username
 try:
     username = sys.argv[1]
 except:
@@ -9,6 +9,7 @@ except:
     exit(1)
 
 
+# confirm username
 res = None
 try:
     res = sys.argv[2]
@@ -21,6 +22,7 @@ if res != '--confirm':
         exit()
 
 
+# get total money
 try:
     total = sys.argv[3]
 except:
@@ -28,7 +30,7 @@ except:
     if not total:
         total = 0
 
-
+# check if the number is valid
 try:
     total = float(total)
 except:
@@ -36,6 +38,7 @@ except:
     exit()
 
 
+# attempt to add the new user
 try:
     user = User(username=username, total=total)
     session.add(user)
