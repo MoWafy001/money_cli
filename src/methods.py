@@ -9,6 +9,14 @@ class Methods:
 
     def get_total(self):
         print('Total:', self.current_user.total)
+        print('-'*16)
+        for c in self.current_user.categories:
+            print(c.category_name, ':', c.total)
+    
+
+    def get_history(self):
+        for h in self.current_user.history:
+            print(h.value, '\t', h.category_name, '\t', h.date)
 
 
     def set_total(self, new_total):

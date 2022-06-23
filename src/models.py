@@ -27,6 +27,12 @@ class History(Base):
   category = relationship('Category', backref='history', foreign_keys=[category_name, username])
 
 
+  def __lt__(self, other):
+        return self.date < other.date
+
+
+
+
 
 class Category(Base):
   __tablename__ = 'categories'

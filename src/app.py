@@ -9,6 +9,7 @@ methods = Methods(current_user, session)
 
 commands = {
     'total': methods.get_total,
+    'history': methods.get_history,
     'set-total': methods.set_total,
     'add': methods.add,
     'spend': methods.spend
@@ -26,6 +27,7 @@ def handel_command(command):
     try:
         if action is None:
             methods.get_total()
+            methods.get_history()
         elif value is None:
             commands[action](**flags)
         else:
