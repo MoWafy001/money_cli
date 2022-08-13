@@ -39,13 +39,13 @@ class Methods:
 
     # can receive a category_name in the kargs
     def add(self, value, **kargs):
-        value = int(value)
+        value = float(value)
         self.add_spend(value, **kargs)
 
 
     # can receive a category_name in the kargs
     def spend(self, value, **kargs):
-        value = int(value)
+        value = float(value)
         self.add_spend(-value, **kargs)
 
     
