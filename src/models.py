@@ -21,10 +21,9 @@ class History(Base):
   desc = Column(String, nullable=True)
 
   username = Column(String, ForeignKey('users.username'), nullable=False)
-  category_name = Column(String, ForeignKey('categories.category_name'), nullable=False)
+  category_name = Column(String, nullable=False)
 
   user = relationship('User', back_populates='history')
-  category = relationship('Category', backref='history', foreign_keys=[category_name, username])
 
 
   def __lt__(self, other):
@@ -54,11 +53,11 @@ class User(Base):
 
   def choose_category(self):
     print('Choose a category:')
-    print('________________________\n')
+    print(f'{"_"*40}\n')
     for i, c in enumerate(self.categories):
-      print(f'{i}\t{c.category_name}\t{"[Default]" if c.category_name == DEFAULT_CATEGORY_NAME else ""}')
+      print(f'  {i}\t{c.total}\t{c.category_name}\t{"[Default]" if c.category_name == DEFAULT_CATEGORY_NAME else ""}')
     
-    print('________________________\n')
+    print(f'{"_"*40}\n')
     choice = input('Choice Index(keep blank for default): ')
 
     if choice.strip() == '':
@@ -94,6 +93,11 @@ class User(Base):
       category.total += value
     except:
       raise Exception(f'Could not add to category ({category_name}). It may not exist')
+
+    if category.total < 0:
+      raise Exception(f'{category_name} only has {category.total-value}')
+    
+    print(abs(value), f'added to {category_name}' if value >= 0 else f'spent from {category_name}')
 
 
 # create all

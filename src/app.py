@@ -1,20 +1,27 @@
-from .models import User, session
 from .config import CURRENT_USER
-from .methods import Methods
+from .methods import Methods, User, session
 
 
 current_user = session.query(User).get(CURRENT_USER)
+
+if current_user is None:
+    print(f'User ({CURRENT_USER}) was not found\n')
+    print(f'run the following script to create {CURRENT_USER}\n')
+    print("="*40)
+    print(f'= python create_user.py {CURRENT_USER}')
+    print("="*40)
+    exit(1)
+
 methods = Methods(current_user, session)
 
 
 commands = {
     'total': methods.get_total,
     'history': methods.get_history,
-    'set-total': methods.set_total,
     'add': methods.add,
     'spend': methods.spend,
-    #'create-category': methods.create_category,
-    #'remove-category': methods.remove_category,
+    'create-category': methods.create_category,
+    'remove-category': methods.remove_category,
     #'analyse': methods.analyse,
 }
 
@@ -30,6 +37,7 @@ def handel_command(command):
     try:
         if action is None:
             methods.get_total()
+            print("-"*16)
             methods.get_history()
         elif value is None:
             commands[action](**flags)
