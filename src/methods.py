@@ -17,7 +17,7 @@ class Methods:
 
     def get_history(self):
         for h in self.current_user.history[::-1][:10]:
-            print(h.value, '\t', h.category_name, '\t', h.date)
+            print ("{:<8} {:<10} {:<10} {:<10}".format(h.value, h.category_name, str(h.date), h.desc or ''))
 
 
     # can receive a category_name in the kargs

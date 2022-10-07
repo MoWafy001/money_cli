@@ -5,4 +5,10 @@
 
 parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 
-$parent_path/env/bin/python $parent_path/money.py $@
+C=''
+for i in "$@"; do 
+    i="${i//\\/\\\\}"
+    C="$C \"${i//\"/\\\"}\""
+done
+
+bash -c "$parent_path/env/bin/python $parent_path/money.py $C"

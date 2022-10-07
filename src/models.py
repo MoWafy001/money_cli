@@ -73,6 +73,7 @@ class User(Base):
 
   def add_or_spend(self, value, when, **kargs):
     category_name = kargs['category_name'] if 'category_name' in kargs else self.choose_category()
+    desc = kargs['desc'] if 'desc' in kargs else None
 
     if self.total is None:
       self.total = 0
@@ -80,7 +81,7 @@ class User(Base):
     old_total = self.total
 
     try:
-      h = History(date=when, value=value, category_name=category_name)
+      h = History(date=when, value=value, category_name=category_name, desc=desc)
       self.history.append(h)
       self.total += value
     except Exception as e:
