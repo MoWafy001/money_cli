@@ -10,5 +10,6 @@ subcmds=(\
 'spend' \
 'create-category' \
 'remove-category' \
+'budget' \
 )
 _describe 'command' subcmds

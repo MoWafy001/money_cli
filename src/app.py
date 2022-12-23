@@ -22,6 +22,7 @@ commands = {
     'spend': methods.spend,
     'create-category': methods.create_category,
     'remove-category': methods.remove_category,
+    'budget': methods.budget,
     #'analyse': methods.analyse,
 }
 
@@ -37,6 +38,8 @@ def handel_command(command):
     try:
         if action is None:
             methods.get_total()
+            print("-"*16)
+            methods.show_budget()
             print("-"*16)
             methods.get_history()
         elif value is None:
