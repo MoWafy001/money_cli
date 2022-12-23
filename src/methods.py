@@ -1,5 +1,5 @@
 from datetime import datetime
-from .models import User, session, Category, DEFAULT_CATEGORY_NAME
+from .models import User, session, Category, History, DEFAULT_CATEGORY_NAME
 
 
 class Methods:
@@ -15,8 +15,21 @@ class Methods:
         for c in self.current_user.categories:
             print(c.category_name, ':', c.total)
 
-    def get_history(self):
-        for h in self.current_user.history[::-1][:10]:
+    def get_history(self, **kargs):
+
+        if 'category' in kargs:
+            category_name = kargs['category']
+            history = self.session.query(History).filter_by(
+                username=self.current_user.username,
+                category_name=category_name).all()
+            history = sorted(history, key=lambda x: x.date, reverse=True)
+        else:
+            history = self.current_user.history
+
+        if 'n' in kargs:
+            history = history[::-1][:int(kargs['n'])]
+
+        for h in history:
             print("{:<8} {:<10} {:<10} {:<10}".format(h.value, h.category_name,
                                                       str(h.date), h.desc
                                                       or ''))
