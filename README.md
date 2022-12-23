@@ -7,6 +7,7 @@ A command line interface I made to manage money. It's a work in progress, but it
     - [Clone the repository](#clone-the-repository)
     - [Create a virtual environment](#create-a-virtual-environment)
     - [Install the requirements](#install-the-requirements)
+    - [Create a user](#create-a-user)
     - [Run](#run)
 
 ### Clone the repository
@@ -29,6 +30,11 @@ The script (`money`) expects the virtual environment to be named `env`. If you w
 ### Install the requirements
 ```bash
 pip install -r requirements.txt
+```
+
+### Create a user
+```bash
+python3 create_user.py <username>
 ```
 
 ### Run
