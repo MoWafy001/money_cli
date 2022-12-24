@@ -35,6 +35,8 @@ class Category(Base):
     username = Column(String, ForeignKey('users.username'), primary_key=True)
     total = Column(Float, default=0, nullable=False)
 
+    except_from_budget = Column(Boolean, default=False, nullable=False)
+    allowed_to_spend = Column(Boolean, default=True, nullable=False)
 
 class User(Base):
     __tablename__ = 'users'
@@ -42,7 +44,6 @@ class User(Base):
     username = Column(String, primary_key=True)
     total = Column(Float, default=0, nullable=False)
     daily_budget = Column(Float, nullable=True)
-    budget_exceptions = Column(String, default='', nullable=True)
 
     history = relationship('History', back_populates='user')
     categories = relationship('Category', backref='user')

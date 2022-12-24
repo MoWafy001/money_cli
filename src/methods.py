@@ -1,12 +1,11 @@
 from datetime import datetime
 from .models import User, session, Category, History, DEFAULT_CATEGORY_NAME
 
-class Methods:
 
+class Methods:
     def __init__(self, current_user, session):
         self.current_user = current_user
         self.session = session
-        self.budget_exceptions = self.current_user.budget_exceptions.split('|')
 
     def get_total(self):
         print('Total:', self.current_user.total)
@@ -92,18 +91,19 @@ class Methods:
             print('Daily budget set to', self.current_user.daily_budget)
 
         elif 'add_exception' in kargs:
-            self.budget_exceptions.append(kargs['add_exception'])
-            self.current_user.budget_exceptions = '|'.join(
-                self.budget_exceptions)
+            category = self.session.query(Category).get(
+                (kargs['add_exception'], self.current_user.username))
+            category.except_from_budget = True
             self.session.commit()
             print('Added exception', kargs['add_exception'])
 
         elif 'remove_exception' in kargs:
-            self.budget_exceptions.remove(kargs['remove_exception'])
-            self.current_user.budget_exceptions = '|'.join(
-                self.budget_exceptions)
+            category = self.session.query(Category).get(
+                (kargs['remove_exception'], self.current_user.username))
+            category.except_from_budget = False
             self.session.commit()
             print('Removed exception', kargs['remove_exception'])
+
         else:
             self.show_budget()
 
@@ -142,8 +142,8 @@ class Methods:
     def get_budget_total_month_spending(self):
         history = list(
             filter(
-                lambda h: h.date.month == datetime.now().month and h.value < 0
-                and h.category_name not in self.budget_exceptions,
+                lambda h: h.date.month == datetime.now().month and h.value < 0 and not self.session.query(
+                    Category).get((h.category_name, self.current_user.username)).except_from_budget,
                 self.current_user.history))
         total = abs(sum([h.value for h in history]))
 
