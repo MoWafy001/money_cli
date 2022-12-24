@@ -74,7 +74,7 @@ class User(Base):
             )
 
         if value < 0 and not session.query(Category).get((category_name, self.username)).allowed_to_spend:
-            raise Exception(f'{category_name} is not allowed to spend')
+            raise Exception(f'{category_name} is locked')
 
         desc = kargs['desc'] if 'desc' in kargs else None
 
