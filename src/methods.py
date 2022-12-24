@@ -51,18 +51,20 @@ class Methods:
 
     # can receive a category_name in the kargs
     def add(self, value, **kargs):
+        value = float(value)
+
         if value <= 0:
             raise Exception('Value must be greater than 0')
 
-        value = float(value)
         self.add_spend(value, **kargs)
 
     # can receive a category_name in the kargs
     def spend(self, value, **kargs):
+        value = float(value)
+        
         if value <= 0:
             raise Exception('Value must be greater than 0')
         
-        value = float(value)
         self.add_spend(-value, **kargs)
 
     # can receive a value in the kargs as a flag
