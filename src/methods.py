@@ -139,6 +139,11 @@ class Methods:
               minimum_allowed_daily_spending)
         print('\033[0m', end='')
 
+        print("Exceptions from budget:")
+        for c in self.current_user.categories:
+            if c.except_from_budget:
+                print("*", c.category_name)
+
     def get_budget_total_month_spending(self):
         history = list(
             filter(
