@@ -11,5 +11,7 @@ subcmds=(\
 'create-category' \
 'remove-category' \
 'budget' \
+'lock' \
+'unlock' \
 )
 _describe 'command' subcmds
