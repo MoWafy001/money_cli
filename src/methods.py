@@ -11,7 +11,8 @@ class Methods:
         print('Total:', self.current_user.total)
         print('-' * 16)
         for c in self.current_user.categories:
-            print(c.category_name, ':', c.total)
+            #print(c.category_name, ':', c.allowed_to_spend)
+            print(f'{c.category_name}: {c.total} {"[L]" if not c.allowed_to_spend else ""}')
 
     def get_history(self, **kargs):
 
@@ -50,11 +51,17 @@ class Methods:
 
     # can receive a category_name in the kargs
     def add(self, value, **kargs):
+        if value <= 0:
+            raise Exception('Value must be greater than 0')
+
         value = float(value)
         self.add_spend(value, **kargs)
 
     # can receive a category_name in the kargs
     def spend(self, value, **kargs):
+        if value <= 0:
+            raise Exception('Value must be greater than 0')
+        
         value = float(value)
         self.add_spend(-value, **kargs)
 
@@ -153,6 +160,20 @@ class Methods:
         total = abs(sum([h.value for h in history]))
 
         return total
+
+    def lock(self, category_name):
+        category = self.session.query(Category).get(
+            (category_name, self.current_user.username))
+        category.allowed_to_spend = False
+        self.session.commit()
+        print(f'--> {category_name} locked')
+
+    def unlock(self, category_name):
+        category = self.session.query(Category).get(
+            (category_name, self.current_user.username))
+        category.allowed_to_spend = True
+        self.session.commit()
+        print(f'--> {category_name} unlocked')
 
     def analyse(self):
         pass

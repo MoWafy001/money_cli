@@ -72,6 +72,10 @@ class User(Base):
         category_name = kargs[
             'category_name'] if 'category_name' in kargs else self.choose_category(
             )
+
+        if value < 0 and not session.query(Category).get((category_name, self.username)).allowed_to_spend:
+            raise Exception(f'{category_name} is not allowed to spend')
+
         desc = kargs['desc'] if 'desc' in kargs else None
 
         if self.total is None:

@@ -21,6 +21,7 @@ commands = {
     'create-category': methods.create_category,
     'remove-category': methods.remove_category,
     'budget': methods.budget,
+    'lock': methods.lock,
     # 'analyse': methods.analyse,
 }
 
