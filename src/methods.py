@@ -1,7 +1,6 @@
 from datetime import datetime
 from .models import User, session, Category, History, DEFAULT_CATEGORY_NAME
 
-
 class Methods:
 
     def __init__(self, current_user, session):
@@ -117,13 +116,27 @@ class Methods:
         monthly_budget = self.current_user.daily_budget * 30
         print('Monthly budget:', monthly_budget)
 
-        remaining_for_this_month = monthly_budget - self.get_budget_total_month_spending(
-        )
+        remaining_for_this_month = monthly_budget - \
+            self.get_budget_total_month_spending()
+        remaining_for_this_month = round(
+            remaining_for_this_month, 2)
+
+        minimum_allowed_daily_spending = (remaining_for_this_month /
+                                          (30 - datetime.now().day)) if datetime.now().day < 30 else 0
+        minimum_allowed_daily_spending = round(
+            minimum_allowed_daily_spending, 2)
 
         # turn red if negative
-        if remaining_for_this_month < 0:
+        if remaining_for_this_month <= 0:
             print('\033[91m', end='')
         print('Remaining money for this month:', remaining_for_this_month)
+        print('\033[0m', end='')
+
+        # turn red if negative
+        if minimum_allowed_daily_spending <= 0:
+            print('\033[91m', end='')
+        print('Minimum allowed daily spending:',
+              minimum_allowed_daily_spending)
         print('\033[0m', end='')
 
     def get_budget_total_month_spending(self):
