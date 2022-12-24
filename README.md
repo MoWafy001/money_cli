@@ -9,7 +9,7 @@ A command line interface I made to manage money. It's a work in progress, but it
     - [Install the requirements](#install-the-requirements)
     - [Create a `.env` file](#create-a-env-file)
     - [Create a user](#create-a-user)
-    - [Run](#run)
+  - [Run](#run)
 
 ### Clone the repository
 ```bash
@@ -44,7 +44,7 @@ Then edit the file to your liking.
 python3 create_user.py <username>
 ```
 
-### Run
+## Run
 ```bash
 ./money
 ```
