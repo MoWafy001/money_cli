@@ -23,10 +23,10 @@ class Methods:
                 category_name=category_name).all()
             history = sorted(history, key=lambda x: x.date, reverse=True)
         else:
-            history = self.current_user.history
+            history = sorted(self.current_user.history, reverse=True)
 
         if 'n' in kargs:
-            history = history[::-1][:int(kargs['n'])]
+            history = history[:int(kargs['n'])]
 
         for h in history:
             print("{:<8} {:<10} {:<10} {:<10}".format(h.value, h.category_name,
