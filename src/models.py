@@ -73,7 +73,10 @@ class User(Base):
             'category_name'] if 'category_name' in kargs else self.choose_category(
             )
 
-        if value < 0 and not session.query(Category).get((category_name, self.username)).allowed_to_spend:
+        cat = session.query(Category).get((category_name, self.username))
+        if cat is None:
+            raise Exception(f'Category {category_name} does not exist')
+        if value < 0 and not cat.allowed_to_spend:
             raise Exception(f'{category_name} is locked')
 
         desc = kargs['desc'] if 'desc' in kargs else None
