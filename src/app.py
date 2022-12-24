@@ -22,6 +22,7 @@ commands = {
     'remove-category': methods.remove_category,
     'budget': methods.budget,
     'lock': methods.lock,
+    'unlock': methods.unlock,
     # 'analyse': methods.analyse,
 }
 
