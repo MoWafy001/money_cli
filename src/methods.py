@@ -170,7 +170,7 @@ class Methods:
             if category.except_from_budget:
                 return False
 
-            if h.desc is not None and h.desc == '*transfer to*':
+            if h.desc is not None and h.desc == '*transfer*':
                 return False
 
             return True
