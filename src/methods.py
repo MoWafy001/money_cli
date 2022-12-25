@@ -11,8 +11,9 @@ class Methods:
         print('Total:', self.current_user.total)
         print('-' * 16)
         for c in self.current_user.categories:
-            #print(c.category_name, ':', c.allowed_to_spend)
-            print(f'{c.category_name}: {c.total} {"[L]" if not c.allowed_to_spend else ""}')
+            # print(c.category_name, ':', c.allowed_to_spend)
+            print(
+                f'{c.category_name}: {c.total} {"[L]" if not c.allowed_to_spend else ""}')
 
     def get_history(self, **kargs):
 
@@ -37,7 +38,8 @@ class Methods:
     def add_spend(self, value, **kargs):
         try:
             if 'from' in kargs and value > 0:
-                self.spend(value, category_name=kargs['from'])
+                self.spend(
+                    value, category_name=kargs['from'], desc="*transfer*")
 
             self.current_user.add_or_spend(value, datetime.now(), **kargs)
 
@@ -61,10 +63,10 @@ class Methods:
     # can receive a category_name in the kargs
     def spend(self, value, **kargs):
         value = float(value)
-        
+
         if value <= 0:
             raise Exception('Value must be greater than 0')
-        
+
         self.add_spend(-value, **kargs)
 
     # can receive a value in the kargs as a flag
@@ -154,26 +156,41 @@ class Methods:
                 print("*", c.category_name)
 
     def get_budget_total_month_spending(self):
-        history = list(
-            filter(
-                lambda h: h.date.month == datetime.now().month and h.value < 0 and not self.session.query(
-                    Category).get((h.category_name, self.current_user.username)).except_from_budget,
-                self.current_user.history))
-        total = abs(sum([h.value for h in history]))
+
+        def f(h):
+            category = self.session.query(Category).get(
+                (h.category_name, self.current_user.username))
+
+            if h.date.month != datetime.now().month:
+                return False
+
+            if h.value >= 0:
+                return False
+
+            if category.except_from_budget:
+                return False
+
+            if h.desc is not None and h.desc == '*transfer to*':
+                return False
+
+            return True
+
+        history=list(filter(f, self.current_user.history))
+        total=abs(sum([h.value for h in history]))
 
         return total
 
     def lock(self, category_name):
-        category = self.session.query(Category).get(
+        category=self.session.query(Category).get(
             (category_name, self.current_user.username))
-        category.allowed_to_spend = False
+        category.allowed_to_spend=False
         self.session.commit()
         print(f'--> {category_name} locked')
 
     def unlock(self, category_name):
-        category = self.session.query(Category).get(
+        category=self.session.query(Category).get(
             (category_name, self.current_user.username))
-        category.allowed_to_spend = True
+        category.allowed_to_spend=True
         self.session.commit()
         print(f'--> {category_name} unlocked')
 
