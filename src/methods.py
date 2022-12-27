@@ -161,6 +161,9 @@ class Methods:
             category = self.session.query(Category).get(
                 (h.category_name, self.current_user.username))
 
+            if category is None:
+                return False
+
             if h.date.month != datetime.now().month:
                 return False
 
