@@ -30,7 +30,7 @@ class Methods:
             history = history[:int(kargs['n'])]
 
         for h in history:
-            print("{:<8} {:<10} {:<10} {:<10}".format(h.value, h.category_name,
+            print("{:<8} {:<20} {:<10} {:<10}".format(h.value, h.category_name + ('!' if h.except_from_budget else ""),
                                                       str(h.date), h.desc
                                                       or ''))
 
@@ -39,7 +39,7 @@ class Methods:
         try:
             if 'from' in kargs and value > 0:
                 self.spend(
-                    value, category_name=kargs['from'], desc="*transfer*")
+                    value, category_name=kargs['from'], desc="*transfer*", except_from_budget=True)
 
             self.current_user.add_or_spend(value, datetime.now(), **kargs)
 
@@ -116,9 +116,9 @@ class Methods:
             print('Removed exception', kargs['remove_exception'])
 
         else:
-            self.show_budget()
+            self.show_budget(**kargs)
 
-    def show_budget(self):
+    def show_budget(self, **kargs):
         if self.current_user.daily_budget is None:
             print('No daily budget set')
             return
@@ -128,7 +128,9 @@ class Methods:
         print('Monthly budget:', monthly_budget)
 
         remaining_for_this_month = monthly_budget - \
-            self.get_budget_total_month_spending()
+            self.get_budget_total_month_spending(
+                printHistory=kargs['history'] == 'true' if 'history' in kargs else False
+            )
         remaining_for_this_month = round(
             remaining_for_this_month, 2)
 
@@ -155,7 +157,7 @@ class Methods:
             if c.except_from_budget:
                 print("*", c.category_name)
 
-    def get_budget_total_month_spending(self):
+    def get_budget_total_month_spending(self, printHistory=False):
 
         def f(h):
             category = self.session.query(Category).get(
@@ -170,7 +172,7 @@ class Methods:
             if h.value >= 0:
                 return False
 
-            if category.except_from_budget:
+            if h.except_from_budget:
                 return False
 
             if h.desc is not None and h.desc == '*transfer*':
@@ -178,7 +180,13 @@ class Methods:
 
             return True
 
-        history=list(filter(f, self.current_user.history))
+        history = list(filter(f, self.current_user.history))
+
+        if printHistory:
+            print("{:<10} {:<20} {:<20} {:<20}".format('Value', 'Category', 'Description', 'Date'))
+            for h in sorted(history, key=lambda h: h.date, reverse=True):
+                print("{:<10} {:<20} {:<20} {:<20}".format(h.value, h.category_name, h.desc or "", str(h.date)))
+
         total=abs(sum([h.value for h in history]))
 
         return total

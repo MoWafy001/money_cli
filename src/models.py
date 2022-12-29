@@ -18,6 +18,7 @@ class History(Base):
     date = Column(DateTime, primary_key=True)
     value = Column(Float, nullable=False)
     desc = Column(String, nullable=True)
+    except_from_budget = Column(Boolean, default=False, nullable=False)
 
     username = Column(String, ForeignKey('users.username'), nullable=False)
     category_name = Column(String, nullable=False)
@@ -37,6 +38,7 @@ class Category(Base):
 
     except_from_budget = Column(Boolean, default=False, nullable=False)
     allowed_to_spend = Column(Boolean, default=True, nullable=False)
+
 
 class User(Base):
     __tablename__ = 'users'
@@ -71,7 +73,7 @@ class User(Base):
     def add_or_spend(self, value, when, **kargs):
         category_name = kargs[
             'category_name'] if 'category_name' in kargs else self.choose_category(
-            )
+        )
 
         cat = session.query(Category).get((category_name, self.username))
         if cat is None:
@@ -87,10 +89,12 @@ class User(Base):
         old_total = self.total
 
         try:
+            except_from_budget = kargs['except_from_budget'] if 'except_from_budget' in kargs else cat.except_from_budget
             h = History(date=when,
                         value=value,
                         category_name=category_name,
-                        desc=desc)
+                        desc=desc,
+                        except_from_budget=except_from_budget,)
             self.history.append(h)
             self.total += value
         except Exception as e:
