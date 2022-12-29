@@ -39,7 +39,7 @@ class Methods:
         try:
             if 'from' in kargs and value > 0:
                 self.spend(
-                    value, category_name=kargs['from'], desc="*transfer*", except_from_budget=True)
+                    value, category_name=kargs['from'], desc="transfer", except_from_budget=True)
 
             self.current_user.add_or_spend(value, datetime.now(), **kargs)
 
@@ -123,8 +123,10 @@ class Methods:
             print('No daily budget set')
             return
 
+        max_days = datetime.now().max.day
+
         print('Daily budget:', self.current_user.daily_budget)
-        monthly_budget = self.current_user.daily_budget * 30
+        monthly_budget = self.current_user.daily_budget * max_days
         print('Monthly budget:', monthly_budget)
 
         remaining_for_this_month = monthly_budget - \
@@ -135,7 +137,7 @@ class Methods:
             remaining_for_this_month, 2)
 
         minimum_allowed_daily_spending = (remaining_for_this_month /
-                                          (30 - datetime.now().day)) if datetime.now().day < 30 else 0
+                                          (max_days - datetime.now().day)) if datetime.now().day < 30 else 0
         minimum_allowed_daily_spending = round(
             minimum_allowed_daily_spending, 2)
 
@@ -175,33 +177,32 @@ class Methods:
             if h.except_from_budget:
                 return False
 
-            if h.desc is not None and h.desc == '*transfer*':
-                return False
-
             return True
 
         history = list(filter(f, self.current_user.history))
 
         if printHistory:
-            print("{:<10} {:<20} {:<20} {:<20}".format('Value', 'Category', 'Description', 'Date'))
+            print("{:<10} {:<20} {:<20} {:<20}".format(
+                'Value', 'Category', 'Description', 'Date'))
             for h in sorted(history, key=lambda h: h.date, reverse=True):
-                print("{:<10} {:<20} {:<20} {:<20}".format(h.value, h.category_name, h.desc or "", str(h.date)))
+                print("{:<10} {:<20} {:<20} {:<20}".format(
+                    h.value, h.category_name, h.desc or "", str(h.date)))
 
-        total=abs(sum([h.value for h in history]))
+        total = abs(sum([h.value for h in history]))
 
         return total
 
     def lock(self, category_name):
-        category=self.session.query(Category).get(
+        category = self.session.query(Category).get(
             (category_name, self.current_user.username))
-        category.allowed_to_spend=False
+        category.allowed_to_spend = False
         self.session.commit()
         print(f'--> {category_name} locked')
 
     def unlock(self, category_name):
-        category=self.session.query(Category).get(
+        category = self.session.query(Category).get(
             (category_name, self.current_user.username))
-        category.allowed_to_spend=True
+        category.allowed_to_spend = True
         self.session.commit()
         print(f'--> {category_name} unlocked')
 
