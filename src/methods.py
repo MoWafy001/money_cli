@@ -137,7 +137,7 @@ class Methods:
             remaining_for_this_month, 2)
 
         minimum_allowed_daily_spending = (remaining_for_this_month /
-                                          (max_days - datetime.now().day)) if datetime.now().day < 30 else 0
+                                          (max_days - datetime.now().day)) if datetime.now().day < max_days else 0
         minimum_allowed_daily_spending = round(
             minimum_allowed_daily_spending, 2)
 
