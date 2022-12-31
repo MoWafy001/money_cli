@@ -13,5 +13,7 @@ subcmds=(\
 'budget' \
 'lock' \
 'unlock' \
+'hide' \
+'unhide' \
 )
 _describe 'command' subcmds
