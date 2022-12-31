@@ -7,13 +7,25 @@ class Methods:
         self.current_user = current_user
         self.session = session
 
-    def get_total(self):
+    def get_total(self, **kargs):
+        show_hidden = 'show_hidden' in kargs and kargs['show_hidden'] == 'true'
+
         print('Total:', self.current_user.total)
         print('-' * 16)
         for c in self.current_user.categories:
-            # print(c.category_name, ':', c.allowed_to_spend)
-            print(
-                f'{c.category_name}: {c.total} {"[L]" if not c.allowed_to_spend else ""}')
+            print(f'{c.category_name}: ', end='')
+
+            if c.hide_value:
+                print('\033[90m', end='')
+                if show_hidden:
+                    print(c.total, end=' ')
+                else:
+                    print('--hidden--', end=' ')
+                print('\033[0m', end='')
+            else:
+                print(c.total, end=' ')
+
+            print(f'{"[L]" if not c.allowed_to_spend else ""}')
 
     def get_history(self, **kargs):
 
@@ -205,6 +217,20 @@ class Methods:
         category.allowed_to_spend = True
         self.session.commit()
         print(f'--> {category_name} unlocked')
+
+    def hide(self, category_name):
+        category = self.session.query(Category).get(
+            (category_name, self.current_user.username))
+        category.hide_value = True
+        self.session.commit()
+        print(f'--> {category_name} hidden')
+
+    def unhide(self, category_name):
+        category = self.session.query(Category).get(
+            (category_name, self.current_user.username))
+        category.hide_value = False
+        self.session.commit()
+        print(f'--> {category_name} unhidden')
 
     def analyse(self):
         pass

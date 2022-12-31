@@ -23,6 +23,8 @@ commands = {
     'budget': methods.budget,
     'lock': methods.lock,
     'unlock': methods.unlock,
+    'hide': methods.hide,
+    'unhide': methods.unhide, # I don't think unhide is a real word
     # 'analyse': methods.analyse,
 }
 

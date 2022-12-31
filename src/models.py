@@ -35,6 +35,7 @@ class Category(Base):
     category_name = Column(String, primary_key=True)
     username = Column(String, ForeignKey('users.username'), primary_key=True)
     total = Column(Float, default=0, nullable=False)
+    hide_value = Column(Boolean, default=False, nullable=False)
 
     except_from_budget = Column(Boolean, default=False, nullable=False)
     allowed_to_spend = Column(Boolean, default=True, nullable=False)
