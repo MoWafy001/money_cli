@@ -1,7 +1,8 @@
 #! /usr/bin/bash
 
 # Runs money.py from a virtual environment in the same directory named "env"
-# I tried running it using sh, but didn't work so I used bash
+# This will not work with sh because of BASH_SOURCE.
+# If I can find another solution to BASH_SOURCE that works with sh, I can rewrite the script.
 
 parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 
