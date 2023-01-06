@@ -138,20 +138,22 @@ class Methods:
         max_days = datetime.now().max.day
 
         print('Daily budget:', self.current_user.daily_budget)
+
         monthly_budget = self.current_user.daily_budget * max_days
         print('Monthly budget:', monthly_budget)
 
-        remaining_for_this_month = monthly_budget - \
-            self.get_budget_total_month_spending(
-                printHistory=kargs['history'] == 'true' if 'history' in kargs else False
-            )
-        remaining_for_this_month = round(
-            remaining_for_this_month, 2)
+        budget_total_month_spending = self.get_budget_total_month_spending(
+            printHistory=kargs['history'] == 'true' if 'history' in kargs else False
+        )
 
-        minimum_allowed_daily_spending = (remaining_for_this_month /
-                                          (max_days - datetime.now().day)) if datetime.now().day < max_days else 0
-        minimum_allowed_daily_spending = round(
-            minimum_allowed_daily_spending, 2)
+        remaining_for_this_month = monthly_budget - budget_total_month_spending
+
+        remaining_for_this_month = round(remaining_for_this_month, 2)
+
+        allowed_to_spend_today = (self.current_user.daily_budget * datetime.now().day -
+                                  budget_total_month_spending)
+        allowed_to_spend_today = round(
+            allowed_to_spend_today, 2)
 
         # turn red if negative
         if remaining_for_this_month <= 0:
@@ -160,10 +162,10 @@ class Methods:
         print('\033[0m', end='')
 
         # turn red if negative
-        if minimum_allowed_daily_spending <= 0:
+        if allowed_to_spend_today <= 0:
             print('\033[91m', end='')
-        print('Minimum allowed daily spending:',
-              minimum_allowed_daily_spending)
+        print('Allowed to spend today:',
+              allowed_to_spend_today)
         print('\033[0m', end='')
 
         print("Exceptions from budget:")
