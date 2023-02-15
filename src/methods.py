@@ -49,11 +49,15 @@ class Methods:
     # can receive a category_name in the kargs
     def add_spend(self, value, **kargs):
         try:
+            exceptFromBudget = kargs[
+                'except_from_budget'] if 'except_from_budget' in kargs else False
+            
             if 'from' in kargs and value > 0:
+                exceptFromBudget = True
                 self.spend(
                     value, category_name=kargs['from'], desc="transfer", except_from_budget=True)
 
-            self.current_user.add_or_spend(value, datetime.now(), **kargs)
+            self.current_user.add_or_spend(value, datetime.now(), except_from_budget=exceptFromBudget, **kargs)
 
             self.session.commit()
             self.get_total()
@@ -142,7 +146,7 @@ class Methods:
         monthly_budget = self.current_user.daily_budget * max_days
         print('Monthly budget:', monthly_budget)
 
-        budget_total_month_spending = self.get_budget_total_month_spending(
+        budget_total_month_spending = - self.get_budget_total_month_spending(
             printHistory=kargs['history'] == 'true' if 'history' in kargs else False
         )
 
@@ -185,9 +189,6 @@ class Methods:
             if h.date.month != datetime.now().month:
                 return False
 
-            if h.value >= 0:
-                return False
-
             if h.except_from_budget:
                 return False
 
@@ -202,7 +203,7 @@ class Methods:
                 print("{:<10} {:<20} {:<20} {:<20}".format(
                     h.value, h.category_name, h.desc or "", str(h.date)))
 
-        total = abs(sum([h.value for h in history]))
+        total = sum([h.value for h in history])
 
         return total
 
