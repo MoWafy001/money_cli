@@ -49,15 +49,13 @@ class Methods:
     # can receive a category_name in the kargs
     def add_spend(self, value, **kargs):
         try:
-            exceptFromBudget = kargs[
-                'except_from_budget'] if 'except_from_budget' in kargs else False
-            
             if 'from' in kargs and value > 0:
+                kargs['except_from_budget'] = True
                 exceptFromBudget = True
                 self.spend(
                     value, category_name=kargs['from'], desc="transfer", except_from_budget=True)
 
-            self.current_user.add_or_spend(value, datetime.now(), except_from_budget=exceptFromBudget, **kargs)
+            self.current_user.add_or_spend(value, datetime.now(), **kargs)
 
             self.session.commit()
             self.get_total()
@@ -117,6 +115,15 @@ class Methods:
             self.session.commit()
             print('Daily budget set to', self.current_user.daily_budget)
 
+        if 'set_daily_offset' in kargs:
+            offset = float(kargs['set_daily_offset'])
+            if offset > 0:
+                raise Exception('Offset cannot be greater than 0')
+
+            self.current_user.daily_budget_offset = offset
+            self.session.commit()
+            print('Daily budget offset set to', self.current_user.daily_budget_offset)
+
         elif 'add_exception' in kargs:
             category = self.session.query(Category).get(
                 (kargs['add_exception'], self.current_user.username))
@@ -146,6 +153,10 @@ class Methods:
         monthly_budget = self.current_user.daily_budget * max_days
         print('Monthly budget:', monthly_budget)
 
+        daily_budget_offset = self.current_user.daily_budget_offset or 0
+        if daily_budget_offset is not None and daily_budget_offset != 0:
+            print('Daily budget offset:', daily_budget_offset)
+
         budget_total_month_spending = - self.get_budget_total_month_spending(
             printHistory=kargs['history'] == 'true' if 'history' in kargs else False
         )
@@ -155,7 +166,7 @@ class Methods:
         remaining_for_this_month = round(remaining_for_this_month, 2)
 
         allowed_to_spend_today = (self.current_user.daily_budget * datetime.now().day -
-                                  budget_total_month_spending)
+                                  budget_total_month_spending) + daily_budget_offset
         allowed_to_spend_today = round(
             allowed_to_spend_today, 2)
 
@@ -180,12 +191,6 @@ class Methods:
     def get_budget_total_month_spending(self, printHistory=False):
 
         def f(h):
-            category = self.session.query(Category).get(
-                (h.category_name, self.current_user.username))
-
-            if category is None:
-                return False
-
             if h.date.month != datetime.now().month:
                 return False
 

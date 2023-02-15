@@ -47,6 +47,7 @@ class User(Base):
     username = Column(String, primary_key=True)
     total = Column(Float, default=0, nullable=False)
     daily_budget = Column(Float, nullable=True)
+    daily_budget_offset = Column(Float, default=0, nullable=False)
 
     history = relationship('History', back_populates='user')
     categories = relationship('Category', backref='user')
