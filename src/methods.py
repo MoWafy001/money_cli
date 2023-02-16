@@ -181,11 +181,14 @@ class Methods:
         print("Total added:", totalAdded)
         print("Total spent:", totalSpend)
 
-        remaining_for_this_month = monthly_budget + totalAdded + totalSpend
+        final_monthly_budget = monthly_budget + totalAdded
+        print("Final monthly budget:", round(final_monthly_budget, 2))
+
+        remaining_for_this_month = final_monthly_budget + totalSpend
 
         remaining_for_this_month = round(remaining_for_this_month, 2)
 
-        daily_step = (monthly_budget + totalAdded)/max_days
+        daily_step = final_monthly_budget/max_days
         print("Daily step:", round(daily_step, 2))
 
         allowed_to_spend_today = daily_step * datetime.now().day + totalSpend
