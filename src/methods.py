@@ -122,7 +122,19 @@ class Methods:
 
             self.current_user.daily_budget_offset = offset
             self.session.commit()
-            print('Daily budget offset set to', self.current_user.daily_budget_offset)
+            print('Daily budget offset set to',
+                  self.current_user.daily_budget_offset)
+
+        if 'set_monthly_offset' in kargs:
+            offset = float(kargs['set_monthly_offset'])
+            if offset > 0:
+                raise Exception('Offset cannot be greater than 0')
+
+            max_days = datetime.now().max.day
+            self.current_user.daily_budget_offset = offset / max_days
+            self.session.commit()
+            print('Daily budget offset set to',
+                  self.current_user.daily_budget_offset)
 
         elif 'add_exception' in kargs:
             category = self.session.query(Category).get(
@@ -148,25 +160,33 @@ class Methods:
 
         max_days = datetime.now().max.day
 
-        print('Daily budget:', self.current_user.daily_budget)
-
-        monthly_budget = self.current_user.daily_budget * max_days
-        print('Monthly budget:', monthly_budget)
+        daily_budget = self.current_user.daily_budget
+        print('Daily budget:', round(daily_budget, 2))
 
         daily_budget_offset = self.current_user.daily_budget_offset or 0
         if daily_budget_offset is not None and daily_budget_offset != 0:
-            print('Daily budget offset:', daily_budget_offset)
+            print('Daily budget offset:', round(daily_budget_offset, 2))
+            print("Montly budget offset:", round(daily_budget_offset * max_days, 2))
+            print('Daily budget after offset:', round(daily_budget + daily_budget_offset, 2))
 
-        budget_total_month_spending = - self.get_budget_total_month_spending(
+        daily_budget += daily_budget_offset
+
+        monthly_budget = daily_budget * max_days
+        print('Monthly budget:', round(monthly_budget, 2))
+
+        totalSpend, totalAdded = self.get_budget_total_month_spending(
             printHistory=kargs['history'] == 'true' if 'history' in kargs else False
         )
 
-        remaining_for_this_month = monthly_budget - budget_total_month_spending
+        print("Total added:", totalAdded)
+        print("Total spent:", totalSpend)
+
+        remaining_for_this_month = monthly_budget + totalAdded + totalSpend
 
         remaining_for_this_month = round(remaining_for_this_month, 2)
 
-        allowed_to_spend_today = (self.current_user.daily_budget * datetime.now().day -
-                                  budget_total_month_spending) + daily_budget_offset
+        allowed_to_spend_today = remaining_for_this_month / \
+            (max_days - datetime.now().day + 1)
         allowed_to_spend_today = round(
             allowed_to_spend_today, 2)
 
@@ -208,9 +228,10 @@ class Methods:
                 print("{:<10} {:<20} {:<20} {:<20}".format(
                     h.value, h.category_name, h.desc or "", str(h.date)))
 
-        total = sum([h.value for h in history])
+        totalSpend = sum([h.value for h in history if h.value < 0])
+        totalAdded = sum([h.value for h in history if h.value > 0])
 
-        return total
+        return totalSpend, totalAdded
 
     def lock(self, category_name):
         category = self.session.query(Category).get(
