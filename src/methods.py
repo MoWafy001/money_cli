@@ -185,8 +185,11 @@ class Methods:
 
         remaining_for_this_month = round(remaining_for_this_month, 2)
 
-        allowed_to_spend_today = remaining_for_this_month / \
-            (max_days - datetime.now().day + 1)
+        daily_step = (monthly_budget + totalAdded)/max_days
+        print("Daily step:", round(daily_step, 2))
+
+        allowed_to_spend_today = daily_step * datetime.now().day + totalSpend
+
         allowed_to_spend_today = round(
             allowed_to_spend_today, 2)
 
