@@ -157,6 +157,15 @@ class Methods:
             self.session.commit()
             print('Removed exception', kargs['remove_exception'])
 
+        elif 'account_for_added_money' in kargs:
+            inp = kargs['account_for_added_money'].lower()
+            if inp not in ('true', 'false'):
+                raise Exception("Invalid Input: this function only takes (true) or (false)")
+            inp = True if inp == 'true' else False
+            self.current_user.budget_account_for_added_money = inp
+            print("budget_account_for_added_money is set to", inp)
+            self.session.commit()
+
         else:
             self.show_budget(**kargs)
 
@@ -184,11 +193,12 @@ class Methods:
         totalSpend, totalAdded = self.get_budget_total_month_spending(
             printHistory=kargs['history'] == 'true' if 'history' in kargs else False
         )
+        totalAddedCopy = totalAdded if self.current_user.budget_account_for_added_money else 0
 
         print("Total added:", totalAdded)
         print("Total spent:", totalSpend)
 
-        final_monthly_budget = monthly_budget + totalAdded
+        final_monthly_budget = monthly_budget + totalAddedCopy
         print("Final monthly budget:", round(final_monthly_budget, 2))
 
         remaining_for_this_month = final_monthly_budget + totalSpend
