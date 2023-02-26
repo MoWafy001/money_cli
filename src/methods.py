@@ -110,12 +110,20 @@ class Methods:
         print(f'--> {category_name} removed')
 
     def budget(self, **kargs):
+        max_days = datetime.now().max.day
+
         if 'set_daily' in kargs:
             self.current_user.daily_budget = float(kargs['set_daily'])
             self.session.commit()
             print('Daily budget set to', self.current_user.daily_budget)
 
-        if 'set_daily_offset' in kargs:
+        elif 'set_monthly' in kargs:
+            monthly_budget = float(kargs['set_monthly'])
+            self.current_user.daily_budget = monthly_budget / max_days
+            self.session.commit()
+            print('Daily budget set to', self.current_user.daily_budget)
+
+        elif 'set_daily_offset' in kargs:
             offset = float(kargs['set_daily_offset'])
             if offset > 0:
                 raise Exception('Offset cannot be greater than 0')
@@ -125,12 +133,11 @@ class Methods:
             print('Daily budget offset set to',
                   self.current_user.daily_budget_offset)
 
-        if 'set_monthly_offset' in kargs:
+        elif 'set_monthly_offset' in kargs:
             offset = float(kargs['set_monthly_offset'])
             if offset > 0:
                 raise Exception('Offset cannot be greater than 0')
 
-            max_days = datetime.now().max.day
             self.current_user.daily_budget_offset = offset / max_days
             self.session.commit()
             print('Daily budget offset set to',
