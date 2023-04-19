@@ -135,8 +135,6 @@ class Methods:
 
         elif 'set_monthly_offset' in kargs:
             offset = float(kargs['set_monthly_offset'])
-            if offset > 0:
-                raise Exception('Offset cannot be greater than 0')
 
             self.current_user.daily_budget_offset = offset / max_days
             self.session.commit()
